@@ -1,8 +1,8 @@
 How to run this app?
 ```
-python -m venv .venv
-source .venv/Scripts/activate
-pip install -r requirements.txt
+python3 -m venv .venv
+source .venv/scripts/activate
+pip3 install -r requirements.txt
 ```
 Run in development mode
 ```
