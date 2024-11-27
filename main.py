@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import FastAPI
+from fastapi import FastAPI, status, HTTPException
 from fastapi.params import Body
 from pydantic import BaseModel
 from random import randint
@@ -18,6 +18,12 @@ class Post(BaseModel):
     published: bool = False
     rating: Optional[int] = None
 
+def find_post(id):
+    for post in my_posts:
+        if post['id'] == id:
+            return post
+
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to my Social Media Rest Api!!"}
@@ -26,7 +32,15 @@ def read_root():
 def get_posts():
     return {"data": my_posts}
 
-@app.post("/posts")
+@app.get("/posts/{id}")
+def get_a_post(id: int):
+    post = find_post(id)
+    print(post)
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id: {id} not found")
+    return {"post detail": post}
+
+@app.post("/posts", status_code=status.HTTP_201_CREATED)
 def create_posts(payload: Post):
     payload = payload.model_dump()
     payload["id"] = randint(4,10000)
