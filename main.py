@@ -7,7 +7,7 @@ from random import randint
 app = FastAPI()
 
 my_posts = [
-    {"title": "Favorite beaches", "content": "Puri, Seven mile, Eagle beach, Kannapali Beach", "id": 1},
+    {"title": "Favorite beaches", "content": "Puri, Seven mile, Eagle beach, Kannapali Beach", "id": 1, "published": True},
     {"title": "Favorite Books", "content": "Harry potter series, Hunger games,", "id": 2},
     {"title": "Games for life", "content": "I will play AC series again and again", "id": 3}
 ]
@@ -58,3 +58,17 @@ def delete_a_post(id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id: {id} doesnot exist")
     my_posts.pop(index)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@app.put("/posts/{id}")
+def update_a_post(id: int, post: Post):
+    index = find_index(id=id)
+    if index == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id: {id} doesnot exist")
+    post = post.model_dump()
+    db_post = my_posts[index]
+    for k,v in post.items():
+        db_post[k]= v
+    my_posts[index] = db_post
+    return {"message": f"post updated with id: {id}",
+            "data": post
+            }
