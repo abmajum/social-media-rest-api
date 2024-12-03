@@ -6,5 +6,5 @@ pip3 install -r requirements.txt
 ```
 Run in development mode
 ```
-fastapi dev main.py
+fastapi dev app/main.py
 ```
