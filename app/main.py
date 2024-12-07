@@ -3,6 +3,10 @@ from fastapi import FastAPI, Response, status, HTTPException
 from fastapi.params import Body
 from pydantic import BaseModel
 from random import randint
+import psycopg
+from psycopg.rows import dict_row
+import os
+import time
 
 app = FastAPI()
 
@@ -11,6 +15,23 @@ my_posts = [
     {"title": "Favorite Books", "content": "Harry potter series, Hunger games,", "id": 2},
     {"title": "Games for life", "content": "I will play AC series again and again", "id": 3}
 ]
+
+
+if not os.getenv("dbconnectionstring"):
+    raise ValueError("The 'dbconnectionstring' environment variable must be set")
+dbconnectionstring=os.getenv("dbconnectionstring")
+
+while True:
+    try:
+        conn = psycopg.connect(conninfo=dbconnectionstring, row_factory=dict_row)
+        cur = conn.cursor()
+        print("Database connection was succesfull!")
+        break
+    except Exception as error:
+        print("Connection to the database failed!!!")
+        print("Error:", error)
+        time.sleep(2)
+
 
 class Post(BaseModel):
     title: str
@@ -34,7 +55,9 @@ def read_root():
 
 @app.get("/posts")
 def get_posts():
-    return {"data": my_posts}
+    cur.execute("""SELECT * FROM posts""")
+    posts=cur.fetchall()
+    return {"data": posts}
 
 @app.get("/posts/{id}")
 def get_a_post(id: int):

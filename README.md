@@ -6,5 +6,7 @@ pip3 install -r requirements.txt
 ```
 Run in development mode
 ```
+#export necessary variables
+export dbconnectionstring='smstring'
 fastapi dev app/main.py
 ```
